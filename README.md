@@ -1,5 +1,39 @@
 # PRD 기반 3-File System 방법론
 
+## 현재 구현 프로젝트
+
+이 저장소는 지름막 소비 고민 코칭 Auto Healing MVP를 구현한다. 현재 구현 경계는 다음과 같다.
+
+```text
+src/
+├── api/             HTTP API 경계
+├── agents/          Monitor·Diagnosis·Recovery·Verification·Notification 역할
+├── domain/          사건·상태·공통 도메인 모델
+├── adapters/        결정적 모의 LLM과 외부 경계
+├── services/        코칭·대체 응답 서비스
+├── repositories/    사건 상태 저장 경계
+├── observability/   구조화 로그·측정
+├── fault_injection/ 테스트 전용 장애 주입
+├── orchestration/   워크플로·회로 차단
+└── approval/        사람 승인 경계
+
+tests/
+├── unit/            단위 테스트
+└── integration/     통합 테스트
+
+deploy/              로컬 배포 설정
+```
+
+### 실행 계약
+
+- Python 3.13 이상
+- 패키지 메타데이터와 테스트 설정: `pyproject.toml`
+- 소스 import 기준: `src` 레이아웃
+- 테스트 경로: `tests/unit`, `tests/integration`
+- 외부 LLM·API 키 없이 결정적 모의 LLM으로 실행
+- 장애 주입은 테스트 환경의 모의 의존 서비스에만 적용
+- 기본 로그 시간 기준은 UTC
+
 ## 멀티 에이전트 프로젝트를 아이디어에서 검증 가능한 서비스로 전환하는 개발 방식
 
 ---

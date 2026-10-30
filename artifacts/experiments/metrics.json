@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-10-30",
+  "time_zone": "UTC",
+  "test_run": {
+    "command": "py -m unittest discover -s tests -v",
+    "tests_run": 26,
+    "failures": 0,
+    "errors": 0
+  },
+  "scenarios": [
+    {"failure_type": "http_429", "response_status": "degraded", "final_state": "recovered", "attempts": 3},
+    {"failure_type": "timeout", "response_status": "degraded", "final_state": "recovered", "attempts": 3},
+    {"failure_type": "connection_failure", "response_status": "degraded", "final_state": "recovered", "attempts": 3},
+    {"failure_type": "http_5xx", "response_status": "degraded", "final_state": "recovered", "attempts": 3}
+  ],
+  "aggregate": {
+    "total_incidents": 4,
+    "recovery_success_rate": 1.0,
+    "escalation_rate": 0.0,
+    "average_attempts": 3.0
+  }
+}
