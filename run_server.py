@@ -1,5 +1,5 @@
-from src.api.app import serve
+import uvicorn
 
 
 if __name__ == "__main__":
-    serve()
+    uvicorn.run("src.api.app:app", host="127.0.0.1", port=18001, reload=False)

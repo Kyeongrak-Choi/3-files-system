@@ -49,6 +49,8 @@ class MockLLM:
             raise ConnectionFailureError("mock dependency unavailable")
         if self.fault is FaultType.HTTP_5XX:
             raise UpstreamUnavailableError("mock upstream returned 5xx")
+        if self.fault is FaultType.TIMEOUT:
+            raise LLMTimeoutError("mock dependency timed out")
         if self.delay_seconds > timeout_seconds:
             raise LLMTimeoutError("mock dependency timed out")
         if self.delay_seconds:

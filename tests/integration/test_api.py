@@ -1,49 +1,33 @@
-import json
-import threading
 import unittest
-from http.client import HTTPConnection
 
-from src.api.app import RequestHandler
-from http.server import ThreadingHTTPServer
+from fastapi.testclient import TestClient
+
+from src.api.app import app, state
 
 
 class ApiTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), RequestHandler)
-        cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
-        cls.thread.start()
+    def setUp(self):
+        state.clear_fault()
+        self.client = TestClient(app)
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.server.shutdown()
-        cls.server.server_close()
+    def test_root_health_and_openapi_docs(self):
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/health").json()["status"], "ok")
+        self.assertEqual(self.client.get("/docs").status_code, 200)
+        self.assertEqual(self.client.get("/redoc").status_code, 200)
+        self.assertIn("/coach", self.client.get("/openapi.json").json()["paths"])
 
-    def request(self, method, path, payload=None):
-        connection = HTTPConnection("127.0.0.1", self.server.server_port, timeout=2)
-        body = json.dumps(payload).encode() if payload is not None else None
-        connection.request(method, path, body, {"Content-Type": "application/json"} if body else {})
-        response = connection.getresponse()
-        data = json.loads(response.read())
-        connection.close()
-        return response.status, data
-
-    def test_health_and_normal_coaching_endpoint(self):
-        status, body = self.request("GET", "/health")
-        self.assertEqual(status, 200)
-        self.assertEqual(body["status"], "ok")
-        status, body = self.request("POST", "/coach", {"item_name": "책", "price": 10000, "reason": "읽기"})
-        self.assertEqual(status, 200)
-        self.assertEqual(body["status"], "ok")
+    def test_normal_coaching_endpoint(self):
+        response = self.client.post("/coach", json={"item_name": "책", "price": 10000, "reason": "읽기"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "ok")
 
     def test_fault_endpoint_returns_degraded_coaching(self):
-        status, _ = self.request("POST", "/fault", {"fault": "http_429", "count": 3})
-        self.assertEqual(status, 200)
-        status, body = self.request("POST", "/coach", {"item_name": "책", "price": 10000, "reason": "읽기"})
-        self.assertEqual(status, 200)
-        self.assertEqual(body["status"], "degraded")
-        status, _ = self.request("DELETE", "/fault")
-        self.assertEqual(status, 200)
+        self.assertEqual(self.client.post("/fault", json={"fault": "http_429", "count": 3}).status_code, 200)
+        response = self.client.post("/coach", json={"item_name": "책", "price": 10000, "reason": "읽기"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "degraded")
+        self.assertEqual(self.client.delete("/fault").status_code, 200)
 
 
 if __name__ == "__main__":

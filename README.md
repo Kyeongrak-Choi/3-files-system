@@ -27,12 +27,21 @@ deploy/              로컬 배포 설정
 ### 실행 계약
 
 - Python 3.13 이상
+- FastAPI와 Uvicorn으로 HTTP API 실행
 - 패키지 메타데이터와 테스트 설정: `pyproject.toml`
 - 소스 import 기준: `src` 레이아웃
 - 테스트 경로: `tests/unit`, `tests/integration`
 - 외부 LLM·API 키 없이 결정적 모의 LLM으로 실행
 - 장애 주입은 테스트 환경의 모의 의존 서비스에만 적용
 - 기본 로그 시간 기준은 UTC
+
+### 로컬 실행
+
+    py run_server.py
+
+- Swagger UI: http://127.0.0.1:18001/docs
+- ReDoc: http://127.0.0.1:18001/redoc
+- OpenAPI JSON: http://127.0.0.1:18001/openapi.json
 
 ## 멀티 에이전트 프로젝트를 아이디어에서 검증 가능한 서비스로 전환하는 개발 방식
 

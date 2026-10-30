@@ -7,12 +7,18 @@
 - 검증 명령: `py -m unittest discover -s tests -v`
 - 결과: 26건 실행, 실패 0건, 오류 0건
 - 외부 LLM: 사용하지 않음
+- 실제 서버 실행: 127.0.0.1:18001
+- 참고: 기본 8000 포트는 기존 프로세스가 점유하고 있어 18001 포트로 실행했다.
+- API 프레임워크: FastAPI + Uvicorn
 
 ## 정상 서비스
 
 | 항목 | 결과 |
 |---|---|
 | `/health` | `status=ok` |
+| `/docs` | HTTP 200, Swagger UI |
+| `/redoc` | HTTP 200, ReDoc |
+| `/openapi.json` | HTTP 200, 4개 경로 노출 |
 | 정상 `/coach` | `status=ok` |
 | 응답 질문 수 | 3개 |
 | 외부 네트워크 호출 | 없음 |
@@ -26,6 +32,8 @@
 | 연결 실패 | PASS | 백오프 후 대체 응답 | PASS | 3 | recovered / degraded |
 | HTTP 5xx | PASS | 백오프 후 대체 응답 | PASS | 3 | recovered / degraded |
 | 원인 불명 | PASS | 자동 복구하지 않음 | 에스컬레이션 | 0 | escalated |
+
+실제 HTTP 실행에서도 정상 요청은 `ok`, 429·타임아웃·연결 실패·5xx는 모두 `degraded`와 `retryable=true`를 반환했다.
 
 실험 요약은 `artifacts/experiments/metrics.json`에 저장했다. 모든 장애 주입은 `mock-llm` 대상에 한정된다.
 

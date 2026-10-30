@@ -4,7 +4,13 @@
 
     py -m unittest discover -s tests -v
 
-또는 서버를 실행한 뒤 다음 요청을 보낸다.
+서버는 다음 명령으로 실행한다.
+
+    py run_server.py
+
+Swagger UI는 `http://127.0.0.1:18001/docs`, ReDoc은 `http://127.0.0.1:18001/redoc`에서 확인할 수 있다.
+
+서버 실행 후 다음 요청을 보낸다.
 
     POST /coach
     {"item_name":"책","price":10000,"reason":"읽고 싶다"}

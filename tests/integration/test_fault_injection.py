@@ -40,7 +40,7 @@ class FaultInjectionTests(unittest.TestCase):
         ]
         for fault, expected in cases:
             with self.subTest(fault=fault):
-                dependency = MockLLM(delay_seconds=6 if fault is FaultType.TIMEOUT else 0)
+                dependency = MockLLM()
                 controller = FaultInjectionController(dependency)
                 controller.inject("mock-llm", fault, count=3)
                 with self.assertRaises(expected):
